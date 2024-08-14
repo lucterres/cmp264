@@ -17,7 +17,7 @@ class Velan:
         self.zlist.append(z)
         self.velocitylist.append(velocity)
     def show(self):
-        print(self.coordX , self.coordY)
+        print("Velan x: ", self.coordX , " y:", self.coordY)
         print ('z   ', '  veloc')
         for i in range(len(self.zlist)):
             print(self.zlist[i], self.velocitylist[i])
@@ -58,20 +58,11 @@ def load_data(velans):
 
 
 if __name__ == "__main__":
-    print ("Program Init")
-    # Create an instance of Velan
-    velan_instance = Velan(10, 20)
-
-    # Add some data
-    velan_instance.add(5, 100)
-    velan_instance.add(6, 150)
-
-    # Show the data
-    velan_instance.show()
-    
     velans = []
-    load_data(velans)
 
+    print ("Program Init")
+
+    load_data(velans)
     for v in velans:
         v.show()
 
