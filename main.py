@@ -125,13 +125,13 @@ def loadGrd(filename):
       
     return map
 
-def show2D(map,title=""):
+def show2D(map,title="", scalecolorLabel=""):
 
     X, Y, Z = map.getGrid()
     # Crie um scatter plot com a escala de cores definida por z
     plt.scatter(X, Y, c=Z, cmap='viridis')
     # Adicione uma barra de cores
-    plt.colorbar(label='Variável para escala de cores')
+    plt.colorbar(label=scalecolorLabel)
     # Adicione um título
     plt.title(title)
     # Mostre o gráfico
@@ -142,6 +142,7 @@ def show3D(map,title=""):
 
     # Crie uma figura
     fig = plt.figure(figsize=(10, 10))
+    plt.title(title)
 
     # Adicione um gráfico 3D à figura
     ax = fig.add_subplot(111, projection='3d')
@@ -156,17 +157,18 @@ def show3D(map,title=""):
     # Mostre o gráfico
     plt.show()
 
-def colorProjection3D(surface, geopressure):
+def colorProjection3D(surface, geopressure, legend=""):
     # Supondo que X, Y, Z e D já estejam definidos
     X,Y,Z = surface.getGrid()
     D = geopressure.Z
 
     # Normalizar D para o intervalo [0, 1]
     norm = plt.Normalize(geopressure.zMin, geopressure.zMax)
-    colors = plt.cm.viridis(norm(D))
+    colors = plt.cm.Reds(norm(D))
     
     # Criar a figura
     fig = plt.figure()
+
     ax = fig.add_subplot(111, projection='3d')
     
     # Adjust the vertical exaggeration by setting z-axis limits
@@ -177,9 +179,9 @@ def colorProjection3D(surface, geopressure):
     surf = ax.plot_surface(X, Y, Z, facecolors=colors, rstride=1, cstride=1, linewidth=0, antialiased=False)
 
     # Mostrar a barra de cores
-    mappable = plt.cm.ScalarMappable(cmap='viridis', norm=norm)
+    mappable = plt.cm.ScalarMappable(cmap='Reds', norm=norm)
     mappable.set_array(D)
-    plt.colorbar(mappable, ax=ax, label='Variável para escala de cores')
+    plt.colorbar(mappable, ax=ax, label=legend)
 
     # Mostrar o gráfico
     plt.show()
@@ -200,15 +202,12 @@ if __name__ == "__main__":
     surface = loadGrd(filename)
     pressure = loadGrd(filegeopressure)
 
-    show2D(surface)
-    show3D(surface)
+    show2D(surface,"0Ma_Fundo_Mar_Prof", "Profundidade")
+    show3D(surface,"0Ma_Fundo_Mar_Prof")  
 
-    show2D(pressure)
+    show2D(pressure,"Event_pressure_on_112age", "Pressão")
 
-    colorProjection3D(surface, pressure)
-
-
-
+    colorProjection3D(surface, pressure, "Pressão na superfície MPa")
 
     #geop = loadGrd(filegeopressure)
     #show2D(geop)
