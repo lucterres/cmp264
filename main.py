@@ -56,7 +56,7 @@ class Velan:
 
 def loadVelandata(velans):
     # Python
-    filename = "velans1.txt"
+    filename = "data/velans1.txt"
     # Open the file in read mode ('r')
     with open(filename, 'r') as file:
         # Read the content of the file
