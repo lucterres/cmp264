@@ -21,15 +21,21 @@ class Grid:
         self.xCellSize = (xMax - xMin) / (ix-1)
         self.yCellSize = (yMax - yMin) / (jy-1)
         # Crie os dados para o eixo X, Y
-        self.X = np.linspace(xMin, xMax, ix)
-        self.Y = np.linspace(yMin, yMax, jy)
-        self.X, self.Y = np.meshgrid(self.X, self.Y)
+        x = np.linspace(xMin, xMax, ix)
+        y = np.linspace(yMin, yMax, jy)
+        self.X, self.Y = np.meshgrid(x, y)
         # Crie os dados para o eixo Z
-        self.Z = np.zeros((ix, jy))
-        self.Z[:,:] = zMin
-        # Crie os dados para a velocidade
+        self.Z = np.zeros((jy, ix))
+    def getGrid(self):
+        return self.X, self.Y, self.Z
 
-
+# 341920359
+#VELF                 1033 2280 1350 2408 1657 2518 2273 2714 4048 3192
+#VELF                 1605 2485 1809 2551 2825 2857 4518 333710216 4248 
+#SPNT       6147       163 1188797.5 7598759.6   0530415  
+#01234567890123456789012345678901234567890123456789012345678901234567890
+#0         1         2         3         4         5         6         7
+#                     1    6    1    6    1    6    1    6    1    6       
 class Velan:
     def __init__(self, coordX, coordY):
         self.coordX = coordX
@@ -82,34 +88,28 @@ def loadVelandata(velans):
                     
     return velans
 
-
-def loadGrd():
-    # Python
-    filename = r"data\depth\65Ma_Topo_Cretaceo.grd"
-    # Open the file in read mode ('r')
+def loadGrd(filename):
     with open(filename, 'r') as file:
         lines = file.readlines()
-        line=lines[1]
-        tokens = line.split()
+        
+        tokens = lines[1].split()
         ix = int(tokens[0])
         jy = int(tokens[1])
-        line=lines[2]
-        tokens = line.split()
+        
+        tokens = lines[2].split()
         xMin = int(tokens[0])
         xMax = int(tokens[1])
-        line=lines[3]
-        tokens = line.split()
+        
+        tokens = lines[3].split()
         yMin = int(tokens[0])
         yMax = int(tokens[1])
-        line=lines[4]
-        tokens = line.split()
+        
+        tokens = lines[4].split()
         zMin = float(tokens[0])
         zMax = float(tokens[1])
-        print(ix, jy, xMin, xMax, yMin, yMax, zMin, zMax)
-        x = np.linspace(xMin, xMax, ix)
-        y = np.linspace(yMin, yMax, jy)
-        X,Y = np.meshgrid(x,y)
-        Z = X.copy()
+
+        Z = np.zeros((jy, ix))
+
         for j in range(jy):
             line=lines[j+5]
             tokens = line.split()
@@ -119,12 +119,27 @@ def loadGrd():
                      Z[j,i] = np.nan
                 else:
                      Z[j,i] = float(z)
-        print(Z[50,:])
 
-        
-    return X,Y,Z
+    map = Grid(ix, jy, xMin, xMax, yMin, yMax, zMin, zMax)
+    map.Z = Z
+      
+    return map
 
-def showFigure(X,Y,Z):
+def show2D(map,title=""):
+
+    X, Y, Z = map.getGrid()
+    # Crie um scatter plot com a escala de cores definida por z
+    plt.scatter(X, Y, c=Z, cmap='viridis')
+    # Adicione uma barra de cores
+    plt.colorbar(label='Variável para escala de cores')
+    # Adicione um título
+    plt.title(title)
+    # Mostre o gráfico
+    plt.show()
+
+def show3D(map,title=""):
+    X, Y, Z = map.getGrid()
+
     # Crie uma figura
     fig = plt.figure(figsize=(10, 10))
 
@@ -133,20 +148,69 @@ def showFigure(X,Y,Z):
 
     # Plote a superfície
     ax.plot_surface(X, Y, Z, cmap='viridis')
+    
+    # Adjust the vertical exaggeration by setting z-axis limits
+    z_min, z_max = map.zMin, map.zMax
+    ax.set_zlim(z_min, z_max / 2)  # Adjust the divisor to control exaggeration
 
     # Mostre o gráfico
     plt.show()
 
+def colorProjection3D(surface, geopressure):
+    # Supondo que X, Y, Z e D já estejam definidos
+    X,Y,Z = surface.getGrid()
+    D = geopressure.Z
+
+    # Normalizar D para o intervalo [0, 1]
+    norm = plt.Normalize(geopressure.zMin, geopressure.zMax)
+    colors = plt.cm.viridis(norm(D))
+    
+    # Criar a figura
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    
+    # Adjust the vertical exaggeration by setting z-axis limits
+    z_min, z_max = surface.zMin, surface.zMax
+    ax.set_zlim(z_min, z_max / 2)  # Adjust the divisor to control exaggeration
+
+    # Plotar a superfície com a escala de cores definida por D
+    surf = ax.plot_surface(X, Y, Z, facecolors=colors, rstride=1, cstride=1, linewidth=0, antialiased=False)
+
+    # Mostrar a barra de cores
+    mappable = plt.cm.ScalarMappable(cmap='viridis', norm=norm)
+    mappable.set_array(D)
+    plt.colorbar(mappable, ax=ax, label='Variável para escala de cores')
+
+    # Mostrar o gráfico
+    plt.show()
     
 if __name__ == "__main__":
     velans = []
 
     print ("Program Init")
-    loadVelandata(velans)
-    for v in velans:
-        v.show()
-    X,Y,Z = loadGrd()
-    showFigure(X,Y,Z)
-    
-    
+    #loadVelandata(velans)
+    #for v in velans:
+    #    v.show()
+
+    #filename = r"data\depth\65Ma_Topo_Cretaceo.grd"       
+    filename = r"data\depth\0Ma_Fundo_Mar_Prof.grd"
+    fileTopodoSal= r"data\depth\112Ma_Topo_Sal.grd"
+    filegeopressure= r"data\geopressure\Event_pressure_on_112age.grd"
+
+    surface = loadGrd(filename)
+    pressure = loadGrd(filegeopressure)
+
+    show2D(surface)
+    show3D(surface)
+
+    show2D(pressure)
+
+    colorProjection3D(surface, pressure)
+
+
+
+
+    #geop = loadGrd(filegeopressure)
+    #show2D(geop)
+
     
