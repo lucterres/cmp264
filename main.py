@@ -125,11 +125,11 @@ def loadGrd(filename):
       
     return map
 
-def show2D(map,title="", scalecolorLabel=""):
+def show2D(map,title="", scalecolorLabel="",cmap='viridis'):
 
     X, Y, Z = map.getGrid()
     # Crie um scatter plot com a escala de cores definida por z
-    plt.scatter(X, Y, c=Z, cmap='viridis')
+    plt.scatter(X, Y, c=Z, cmap=cmap)
     # Adicione uma barra de cores
     plt.colorbar(label=scalecolorLabel)
     # Adicione um título
@@ -196,16 +196,17 @@ if __name__ == "__main__":
 
     #filename = r"data\depth\65Ma_Topo_Cretaceo.grd"       
     filename = r"data\depth\0Ma_Fundo_Mar_Prof.grd"
+    topoSal = r"data\depth\112Ma_Topo_Sal.grd"
     fileTopodoSal= r"data\depth\112Ma_Topo_Sal.grd"
     filegeopressure= r"data\geopressure\Event_pressure_on_112age.grd"
 
-    surface = loadGrd(filename)
+    surface = loadGrd(topoSal)
     pressure = loadGrd(filegeopressure)
 
     show2D(surface,"0Ma_Fundo_Mar_Prof", "Profundidade")
     show3D(surface,"0Ma_Fundo_Mar_Prof")  
 
-    show2D(pressure,"Event_pressure_on_112age", "Pressão")
+    show2D(pressure,"Event_pressure_on_112age", "Pressão",cmap='Reds')
 
     colorProjection3D(surface, pressure, "Pressão na superfície MPa")
 
