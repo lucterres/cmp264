@@ -146,34 +146,48 @@ def show3D(map,title=""):
 
     # Adicione um gráfico 3D à figura
     ax = fig.add_subplot(111, projection='3d')
-
+    
     # Plote a superfície
+    # Plote a superfície com uma única cor
+    #ax.plot_surface(X, Y, Z, color='gray')
     ax.plot_surface(X, Y, Z, cmap='viridis')
+
+    # Plote a superfície com a escala de cores definida por outra variável
+    #ax.plot_surface(X, Y, Z, cmap='viridis', facecolors=colors, rstride=1, cstride=1, linewidth=0, antialiased=False)
+
     
     # Adjust the vertical exaggeration by setting z-axis limits
     z_min, z_max = map.zMin, map.zMax
-    ax.set_zlim(z_min, z_max / 2)  # Adjust the divisor to control exaggeration
+    ax.set_zlim(z_min, z_max / 40)  # Adjust the divisor to control exaggeration
 
     # Mostre o gráfico
     plt.show()
 
-def colorProjection3D(surface, geopressure, legend="",cmap='viridis'):
+def colorProjection3D(surface, geopressure, legend="",cmap='viridis',title=""):
     # Supondo que X, Y, Z e D já estejam definidos
     X,Y,Z = surface.getGrid()
     D = geopressure.Z
 
     # Normalizar D para o intervalo [0, 1]
     norm = plt.Normalize(geopressure.zMin, geopressure.zMax)
-    colors = plt.cm.Reds(norm(D))
+    
+    if cmap == 'viridis':
+        colors = plt.cm.viridis(norm(D))
+    else:
+        colors = plt.cm.Reds(norm(D))
+    
+
     
     # Criar a figura
     fig = plt.figure()
+    
 
     ax = fig.add_subplot(111, projection='3d')
+    ax.set_title(title)
     
     # Adjust the vertical exaggeration by setting z-axis limits
     z_min, z_max = surface.zMin, surface.zMax
-    ax.set_zlim(z_min, z_max / 2)  # Adjust the divisor to control exaggeration
+    ax.set_zlim(z_min, z_max / 40)  # Adjust the divisor to control exaggeration
 
     # Plotar a superfície com a escala de cores definida por D
     surf = ax.plot_surface(X, Y, Z, facecolors=colors, rstride=1, cstride=1, linewidth=0, antialiased=False)
@@ -194,7 +208,7 @@ if __name__ == "__main__":
     #for v in velans:
     #    v.show()
 
-    #filename = r"data\depth\65Ma_Topo_Cretaceo.grd"       
+    #filename = r"data\depth\65Ma_Topo_Cretaceo.grd"
     filename = r"data\depth\0Ma_Fundo_Mar_Prof.grd"
     topoSal = r"data\depth\112Ma_Topo_Sal.grd"
     fileTopodoSal= r"data\depth\112Ma_Topo_Sal.grd"
@@ -203,14 +217,20 @@ if __name__ == "__main__":
     surface = loadGrd(topoSal)
     pressure = loadGrd(filegeopressure)
 
-    show2D(surface,"112Ma_Topo_Sal", "Profundidade")
-    show3D(surface,"112Ma_Topo_Sal")  
+    # Mapa de Profundidade da Superfície Topo do Sal
+    show2D(surface,title="Mapa de Profundidade da Superfície Topo do Sal ", scalecolorLabel="Profundidade")
+    show3D(surface,title="Superfície 3D para Topo do Sal - Profundidade")  
 
-    show2D(pressure,"Event_pressure_on_112age", "Pressão",cmap='Reds')
+    colorProjection3D(surface, surface, 
+                      legend="Profundidade",
+                      cmap='viridis',
+                      title="Superfície 3D para Topo do Sal ")
 
-    colorProjection3D(surface, pressure, "Pressão na superfície MPa", cmap='Reds')
-
-    #geop = loadGrd(filegeopressure)
-    #show2D(geop)
-
+    # Mapa de Pressão Geostática
+    show2D(pressure,
+           title="Geopressão na camada Topo do Sal", 
+           scalecolorLabel="Pressão",
+           cmap='Reds')
     
+    # Mostrar a projeção colorida em 3D
+    colorProjection3D(surface, pressure, "Pressão na superfície MPa", cmap='Reds',title="Pressão na superfície 3D")
