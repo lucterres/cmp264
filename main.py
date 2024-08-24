@@ -1,4 +1,5 @@
-# Sprint#2 - Protótipo da(s) visualização(ões)Tarefa
+# Visualização de Informações CMP264 
+# Luciano Damiani Terres
 # Nesta etapa, você deverá entregar uma apresentação em slides descrevendo um protótipo  da(s) visualização(ões) planejadas,
 #  com eventuais interações. Se houver uma primeira implementação, gravar um video e disponibilizar em Google Drive, One Drive ou YouTube. 
 # Esta apresentação deverá ser uma evolução da anterior, contendo os progressos realizados desde a etapa inicial. 
@@ -176,6 +177,9 @@ def colorProjection3D(surface, geopressure, legend="",cmap='viridis',title=""):
     else:
         colors = plt.cm.Reds(norm(D))
 
+    if cmap == 'coolwarm':
+        colors = plt.cm.coolwarm(norm(D))
+
     # Criar a figura
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
@@ -204,8 +208,6 @@ if __name__ == "__main__":
     #for v in velans:
     #    v.show()
 
-
-
     # Fundo do Mar
     fundomar = r"data\depth\0Ma_Fundo_Mar_Prof.grd"
     densityFundo = r"data\density/000_density.grd"
@@ -213,10 +215,10 @@ if __name__ == "__main__":
     densityFundo = loadGrd(densityFundo)
     show2D(surfaceFundomar,title="Mapa de Profundidade do Fundo do Mar", scalecolorLabel="Profundidade")
     show3D(surfaceFundomar,title="Superfície 3D para Fundo do Mar - Profundidade")
-    show2D(densityFundo,title="Densidade no Fundo do Mar", scalecolorLabel="Densidade g/cm3",cmap='viridis')
+    show2D(densityFundo, title="Densidade no Fundo do Mar", scalecolorLabel="Densidade g/cm3", cmap='coolwarm')
     colorProjection3D(surfaceFundomar, densityFundo, 
                       legend="Densidade g/cm3",
-                      cmap='viridis',
+                      cmap='coolwarm',
                       title="Densidade no Fundo do Mar ")
     
     # 023 Oligoceno
@@ -227,10 +229,10 @@ if __name__ == "__main__":
     density = loadGrd(denisityMap)
     show2D(surface,title="Mapa de Profundidade do " + superfic, scalecolorLabel="Profundidade")
     show3D(surface,title="Superfície 3D para  " + superfic + " - Profundidade")
-    show2D(density,title="Densidade no " + superfic, scalecolorLabel="Densidade g/cm3",cmap='viridis')
+    show2D(density,title="Densidade no " + superfic, scalecolorLabel="Densidade g/cm3",cmap='coolwarm')
     colorProjection3D(surface, density, 
                       legend="Densidade g/cm3",
-                      cmap='viridis',
+                      cmap='coolwarm',
                       title="Densidade no  " + superfic)
 
     # Superfície Topo do Sal
@@ -248,7 +250,7 @@ if __name__ == "__main__":
     # Mapa de Pressão Geostática
     show2D(pressure,
            title="Geopressão na camada Topo do Sal", 
-           scalecolorLabel="Pressão",
+           scalecolorLabel="Pressão MPa",
            cmap='Reds')
     
     # Mostrar a projeção colorida em 3D
