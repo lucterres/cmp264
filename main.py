@@ -175,13 +175,9 @@ def colorProjection3D(surface, geopressure, legend="",cmap='viridis',title=""):
         colors = plt.cm.viridis(norm(D))
     else:
         colors = plt.cm.Reds(norm(D))
-    
 
-    
     # Criar a figura
     fig = plt.figure()
-    
-
     ax = fig.add_subplot(111, projection='3d')
     ax.set_title(title)
     
@@ -208,19 +204,42 @@ if __name__ == "__main__":
     #for v in velans:
     #    v.show()
 
-    #filename = r"data\depth\65Ma_Topo_Cretaceo.grd"
-    filename = r"data\depth\0Ma_Fundo_Mar_Prof.grd"
+
+
+    # Fundo do Mar
+    fundomar = r"data\depth\0Ma_Fundo_Mar_Prof.grd"
+    densityFundo = r"data\density/000_density.grd"
+    surfaceFundomar = loadGrd(fundomar)
+    densityFundo = loadGrd(densityFundo)
+    show2D(surfaceFundomar,title="Mapa de Profundidade do Fundo do Mar", scalecolorLabel="Profundidade")
+    show3D(surfaceFundomar,title="Superfície 3D para Fundo do Mar - Profundidade")
+    show2D(densityFundo,title="Densidade no Fundo do Mar", scalecolorLabel="Densidade g/cm3",cmap='viridis')
+    colorProjection3D(surfaceFundomar, densityFundo, 
+                      legend="Densidade g/cm3",
+                      cmap='viridis',
+                      title="Densidade no Fundo do Mar ")
+    
+    # 023 Oligoceno
+    superfic = "Oligoceno"
+    depthMap = r"data\depth\23Ma_Oligoceno_Indiviso.grd"
+    denisityMap = r"data\density/023_density.grd"
+    surface = loadGrd(depthMap)
+    density = loadGrd(denisityMap)
+    show2D(surface,title="Mapa de Profundidade do " + superfic, scalecolorLabel="Profundidade")
+    show3D(surface,title="Superfície 3D para  " + superfic + " - Profundidade")
+    show2D(density,title="Densidade no " + superfic, scalecolorLabel="Densidade g/cm3",cmap='viridis')
+    colorProjection3D(surface, density, 
+                      legend="Densidade g/cm3",
+                      cmap='viridis',
+                      title="Densidade no  " + superfic)
+
+    # Superfície Topo do Sal
     topoSal = r"data\depth\112Ma_Topo_Sal.grd"
-    fileTopodoSal= r"data\depth\112Ma_Topo_Sal.grd"
-    filegeopressure= r"data\geopressure\Event_pressure_on_112age.grd"
-
+    filegeopressure112= r"data\geopressure\Event_pressure_on_112age.grd"
     surface = loadGrd(topoSal)
-    pressure = loadGrd(filegeopressure)
-
-    # Mapa de Profundidade da Superfície Topo do Sal
+    pressure = loadGrd(filegeopressure112)
     show2D(surface,title="Mapa de Profundidade da Superfície Topo do Sal ", scalecolorLabel="Profundidade")
     show3D(surface,title="Superfície 3D para Topo do Sal - Profundidade")  
-
     colorProjection3D(surface, surface, 
                       legend="Profundidade",
                       cmap='viridis',
