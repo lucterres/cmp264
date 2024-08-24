@@ -157,7 +157,7 @@ def show3D(map,title=""):
     # Mostre o gráfico
     plt.show()
 
-def colorProjection3D(surface, geopressure, legend=""):
+def colorProjection3D(surface, geopressure, legend="",cmap='viridis'):
     # Supondo que X, Y, Z e D já estejam definidos
     X,Y,Z = surface.getGrid()
     D = geopressure.Z
@@ -179,7 +179,7 @@ def colorProjection3D(surface, geopressure, legend=""):
     surf = ax.plot_surface(X, Y, Z, facecolors=colors, rstride=1, cstride=1, linewidth=0, antialiased=False)
 
     # Mostrar a barra de cores
-    mappable = plt.cm.ScalarMappable(cmap='Reds', norm=norm)
+    mappable = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
     mappable.set_array(D)
     plt.colorbar(mappable, ax=ax, label=legend)
 
@@ -203,12 +203,12 @@ if __name__ == "__main__":
     surface = loadGrd(topoSal)
     pressure = loadGrd(filegeopressure)
 
-    show2D(surface,"0Ma_Fundo_Mar_Prof", "Profundidade")
-    show3D(surface,"0Ma_Fundo_Mar_Prof")  
+    show2D(surface,"112Ma_Topo_Sal", "Profundidade")
+    show3D(surface,"112Ma_Topo_Sal")  
 
     show2D(pressure,"Event_pressure_on_112age", "Pressão",cmap='Reds')
 
-    colorProjection3D(surface, pressure, "Pressão na superfície MPa")
+    colorProjection3D(surface, pressure, "Pressão na superfície MPa", cmap='Reds')
 
     #geop = loadGrd(filegeopressure)
     #show2D(geop)
